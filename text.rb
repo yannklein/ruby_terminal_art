@@ -22,6 +22,7 @@ class Text
         @x_pos += @vel_x
         @y_pos += @vel_y
         if @x_pos < @@columns && @x_pos > 0 && @y_pos < @@rows && @y_pos > 0
+            @width = x_pos + text.length
             Curses.setpos(@y_pos, @x_pos)
             Curses.attrset(Curses.color_pair(@color))
             Curses.addstr(@text.to_s)

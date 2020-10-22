@@ -16,9 +16,11 @@ def remove(obj)
     obj.vel_y = 0
 end
 
-points = Text.new('Points: 0', 1 , 2 , 1)
-wall = Sprite.new(' ', 4, 5, 4, 5, 1 )
-hero = Sprite.new('😀', 1, 1, 75, 37)
+score = 0
+
+
+points = Text.new("Points: #{score}", 1 , 2 , 1)
+hero = MultiSprite.new(['   ',' 😃 '], 75, 36)
 
 current_crash_fire = 0
 crash_fires = []
@@ -42,6 +44,22 @@ stars = []
 
 hero_bullets = []
 15.times { hero_bullets << Sprite.new('❁', 2, 2, -20, 30, 3)}
+
+
+lives = 5
+hearts = Text.new('', 1, 1, 1)
+enemy_bullets = []
+100.times do
+    enemy_bullet = MultiSprite.new(['   ', ' ✺ ', '   '], -300, 30,1)
+    g.on_collision(enemy_bullet, hero, Proc.new do |the_enemy, the_hero|
+    enemy_bullet.x_pos = -1000
+    the_hero.arr = ['   ',' 😅 ']
+    lives -= 1
+
+end)
+    enemy_bullets << enemy_bullet
+end
+
 
 fires = []
 100.times do
@@ -82,6 +100,8 @@ enemies = []
         explosion.call(enemy)
         enemy.x_pos = -1000
         bullet.x_pos = -1000
+        score += 100
+
     end)
 
     enemies << enemy
@@ -92,10 +112,6 @@ enemies.each do |obj|
     obj.vel_y = rand
 end
 
-lives = []
-5.times do |num|
-    lives << Text.new('♥  ', 2 + num * 2, 1, 1)
-end
 
 
 current_bullet = 0
@@ -112,21 +128,31 @@ current_enemy = 0
 enemy_attack = Proc.new do
     current_enemy = 0 if current_enemy >= enemies.length
     en = enemies[current_enemy]
-    ran_num = rand(1)
     en.y_pos = 0
     en.x_pos = rand(-30..180)
     en.vel_y = rand/2
     en.vel_x = rand * rand(-1..1)
     current_enemy += 1
 end
+current_enemy_bullet = 0
+enemy_shoot = Proc.new do |my_enemy|
+    current_enemy_bullet = 0 if current_enemy_bullet >= enemy_bullets.length
+    bullet = enemy_bullets[current_enemy_bullet]
+    bullet.x_pos = my_enemy.x_pos
+    bullet.y_pos = my_enemy.y_pos
+    bullet.vel_x = rand * [-1, 1].sample
+    bullet.vel_y = rand
+    current_enemy_bullet += 1
+end
 
 
-g.on_click_object(wall, Proc.new do |object|
-    object.color = rand(7)
-end)
+
+#g.on_click_object(wall, Proc.new do |object|
+#    object.color = rand(7)
+#end)
 
 g.on_click(Proc.new do |x,y|
-
+    x > hero.x_pos ? hero.vel_x = 0.5 : hero.vel_x = -0.5
 end)
 
 
@@ -137,10 +163,23 @@ g.on_key_down(' ', hero_shoot)
 
 
 g.game_loop do |keyboard_input, mouse_x, mouse_y|
-    ran_num = rand(10)
+    case lives
+    when 5 then hero.arr = ['   ',' 😃 ']
+    when 4 then hero.arr = ['   ',' 😅 ']
+    when 3 then hero.arr = ['   ',' 😟 ']
+    when 2 then hero.arr = ['   ',' 😢 ']
+    when 1 then hero.arr = ['   ',' 🤕 ']
+    when 0 then hero.arr = ['   ',' 👻 ']
+    end
+    points.text = "Points: #{score}"
+    heart_string = ''
+    lives.times {heart_string << '❤︎ '}
+    hearts.text = heart_string
+    ran_num = rand(17)
     if ran_num == 1
         enemy_attack.call
     end
+    enemy_shoot.call(enemies[rand(enemies.length)]) if rand(2) == 1
 
     enemies.each do |enemy|
         if enemy.y_pos >= 36

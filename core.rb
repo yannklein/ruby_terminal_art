@@ -56,6 +56,7 @@ module Core
             Curses.init_pair(18, 0, 8)
             # for spaces
             Curses.mousemask(Curses::BUTTON1_CLICKED)
+            Curses.stdscr.idlok(false)
             Curses.stdscr.bkgd(Curses.color_pair(9))
             Curses.stdscr.keypad(true)
             Curses.attrset(Curses.color_pair(@@text_color) | Curses::A_BLINK | Curses::A_BOLD)
@@ -64,6 +65,10 @@ module Core
             Curses.setpos(y, x-12)
             Curses.curs_set(0)
             Curses.addstr("****Some Stupid Game****")
+            Curses.setpos(y + 1, x - 16)
+            Curses.addstr("Use arrow keys or mouse to move")
+            Curses.setpos(y + 2, x - 9)
+            Curses.addstr("Use space to shoot")
             Curses.refresh
             Curses.noecho
             Curses.getch
@@ -77,9 +82,9 @@ module Core
     def game_loop
         while true
         detect_collisions
-        #Curses.refresh
-        Curses.clear
-
+        Curses.refresh
+        Curses.erase
+        Curses.clear if rand(10) == 3
         GAME_OBJECTS.each { |obj| obj.display }
         input = Curses.getch
         if input == Curses::KEY_MOUSE
