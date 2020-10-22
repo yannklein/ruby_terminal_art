@@ -9,4 +9,4 @@ Give it a try!
 ```
 ruby game.rb
 ```
-<img src="https://github.com/HatAndBread/ruby_terminal_art/blob/master/Screenshot%202020-10-23%20at%206.38.05.png"></img>
+<img src="https://github.com/HatAndBread/ruby_terminal_art/blob/master/Screenshot%202020-10-23%20at%207.56.53.png"></img>
