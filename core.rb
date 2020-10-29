@@ -1,5 +1,4 @@
 
-require 'colored'
 require 'io/console'
 require 'curses'
 
